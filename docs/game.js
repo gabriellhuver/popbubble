@@ -81,6 +81,10 @@ class PopBubblesGame {
         this.bubbles = [];
         this.particles = [];
         this.nextBubbleId = 0;
+        
+        // Special effects
+        this.screenEffects = [];
+        this.streakEffects = [];
         this.lastSpawnTime = 0;
         this.spawnRate = this.difficultySettings[this.difficulty].spawnRate;
         this.maxBubbles = this.difficultySettings[this.difficulty].maxBubbles;
@@ -412,6 +416,11 @@ class PopBubblesGame {
             if (this.streak >= 10 && this.streak % 5 === 0) {
                 this.showStreakFeedback();
             }
+            
+            // Special effects for round number streaks
+            if (this.streak % 5 === 0) {
+                this.createStreakCelebration(this.streak);
+            }
         } else {
             this.combo = 1;
             // Don't reset streak here - streak only resets on penalty
@@ -647,6 +656,10 @@ class PopBubblesGame {
         // Draw particles
         this.particles.forEach(particle => this.drawParticle(particle));
         
+        // Draw special effects
+        this.drawScreenEffects();
+        this.drawStreakEffects();
+        
         // Draw slow-mo vignette
         if (this.timeScale < 1) {
             const vignetteAlpha = (1 - this.timeScale) * 0.3;
@@ -737,6 +750,186 @@ class PopBubblesGame {
         }, 1200);
     }
     
+    createStreakCelebration(streak) {
+        // Screen flash effect
+        this.createScreenFlash();
+        
+        // Energy waves
+        this.createEnergyWaves();
+        
+        // Confetti particles
+        this.createConfetti();
+        
+        // Special text effect
+        this.createStreakText(streak);
+    }
+    
+    createScreenFlash() {
+        this.screenEffects.push({
+            type: 'flash',
+            duration: 200,
+            startTime: Date.now(),
+            intensity: 0.3
+        });
+    }
+    
+    createEnergyWaves() {
+        const centerX = this.canvasWidth / 2;
+        const centerY = this.canvasHeight / 2;
+        
+        for (let i = 0; i < 2; i++) {
+            this.screenEffects.push({
+                type: 'energyWave',
+                x: centerX,
+                y: centerY,
+                radius: 0,
+                maxRadius: Math.max(this.canvasWidth, this.canvasHeight) * 0.6,
+                duration: 800,
+                startTime: Date.now() + i * 150,
+                color: `hsl(${120 + i * 60}, 80%, 70%)`,
+                alpha: 0.4
+            });
+        }
+    }
+    
+    createConfetti() {
+        const centerX = this.canvasWidth / 2;
+        const centerY = this.canvasHeight / 2;
+        
+        for (let i = 0; i < 20; i++) {
+            const angle = (Math.PI * 2 * i) / 20;
+            const speed = 1 + Math.random() * 2;
+            const size = 2 + Math.random() * 3;
+            
+            this.streakEffects.push({
+                type: 'confetti',
+                x: centerX,
+                y: centerY,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed - 1,
+                size: size,
+                color: `hsl(${Math.random() * 360}, 80%, 70%)`,
+                life: 1,
+                maxLife: 1,
+                gravity: 0.05,
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.1
+            });
+        }
+    }
+    
+    createStreakText(streak) {
+        this.screenEffects.push({
+            type: 'streakText',
+            text: `${streak} STREAK!`,
+            x: this.canvasWidth / 2,
+            y: this.canvasHeight / 2,
+            duration: 1500,
+            startTime: Date.now(),
+            scale: 1,
+            alpha: 1
+        });
+    }
+    
+    
+    updateScreenEffects(deltaTime) {
+        const now = Date.now();
+        
+        // Filter out expired effects instead of modifying array during iteration
+        this.screenEffects = this.screenEffects.filter(effect => {
+            const elapsed = now - effect.startTime;
+            
+            if (elapsed >= effect.duration) {
+                return false; // Remove this effect
+            }
+            
+            const progress = elapsed / effect.duration;
+            
+            switch (effect.type) {
+                case 'flash':
+                    effect.alpha = Math.max(0, Math.min(1, (1 - progress) * effect.intensity));
+                    break;
+                case 'energyWave':
+                    effect.radius = Math.max(0, progress * effect.maxRadius);
+                    effect.alpha = Math.max(0, Math.min(1, (1 - progress) * 0.4));
+                    break;
+                case 'streakText':
+                    effect.scale = Math.max(0.1, 1 + Math.sin(progress * Math.PI) * 0.3);
+                    effect.alpha = Math.max(0, Math.min(1, 1 - progress));
+                    break;
+            }
+            
+            return true; // Keep this effect
+        });
+    }
+    
+    updateStreakEffects(deltaTime) {
+        this.streakEffects = this.streakEffects.filter(effect => {
+            if (effect.type === 'confetti') {
+                effect.x += effect.vx;
+                effect.y += effect.vy;
+                effect.vy += effect.gravity;
+                effect.rotation += effect.rotationSpeed;
+                effect.life -= deltaTime * 0.001;
+                
+                return effect.life > 0; // Keep if still alive
+            }
+            return true; // Keep other effect types
+        });
+    }
+    
+    drawScreenEffects() {
+        this.screenEffects.forEach(effect => {
+            switch (effect.type) {
+                case 'flash':
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${effect.alpha})`;
+                    this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+                    break;
+                    
+                case 'energyWave':
+                    if (effect.radius > 0 && isFinite(effect.radius)) {
+                        this.ctx.save();
+                        this.ctx.strokeStyle = effect.color;
+                        this.ctx.lineWidth = 2;
+                        this.ctx.globalAlpha = effect.alpha;
+                        this.ctx.beginPath();
+                        this.ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
+                        this.ctx.stroke();
+                        this.ctx.restore();
+                    }
+                    break;
+                    
+                case 'streakText':
+                    this.ctx.save();
+                    this.ctx.globalAlpha = effect.alpha;
+                    this.ctx.fillStyle = '#ffd700';
+                    this.ctx.strokeStyle = '#ff6b6b';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.font = `bold ${40 * effect.scale}px Arial`;
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.strokeText(effect.text, effect.x, effect.y);
+                    this.ctx.fillText(effect.text, effect.x, effect.y);
+                    this.ctx.restore();
+                    break;
+            }
+        });
+    }
+    
+    drawStreakEffects() {
+        this.streakEffects.forEach(effect => {
+            if (effect.type === 'confetti') {
+                this.ctx.save();
+                this.ctx.globalAlpha = effect.life;
+                this.ctx.fillStyle = effect.color;
+                this.ctx.translate(effect.x, effect.y);
+                this.ctx.rotate(effect.rotation);
+                this.ctx.fillRect(-effect.size/2, -effect.size/2, effect.size, effect.size);
+                this.ctx.restore();
+            }
+        });
+    }
+    
     gameOver() {
         this.gameState = 'gameOver';
         this.finalScoreEl.textContent = this.score.toLocaleString();
@@ -795,6 +988,10 @@ class PopBubblesGame {
             this.updateParticles(deltaTime);
             this.updateSlowMo();
         }
+        
+        // Update special effects
+        this.updateScreenEffects(deltaTime);
+        this.updateStreakEffects(deltaTime);
         
         // Draw everything
         this.draw();
