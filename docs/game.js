@@ -183,7 +183,6 @@ class PopBubblesGame {
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Touch start detected on Safari');
             if (e.touches && e.touches.length > 0) {
                 const touch = e.touches[0];
                 // Create a synthetic event for Safari
@@ -236,8 +235,6 @@ class PopBubblesGame {
         const isSafariIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent);
         
         if (isSafariIOS) {
-            console.log('Safari iOS detected, applying fixes');
-            
             // Force hardware acceleration
             this.canvas.style.transform = 'translateZ(0)';
             this.canvas.style.webkitTransform = 'translateZ(0)';
@@ -371,18 +368,10 @@ class PopBubblesGame {
     }
     
     handlePointerDown(e) {
-        console.log('Pointer down event:', e.type, 'Game state:', this.gameState);
-        
-        if (this.gameState !== 'running') {
-            console.log('Game not running, ignoring touch');
-            return;
-        }
+        if (this.gameState !== 'running') return;
         
         // Check if the click is on a UI element (not on canvas)
-        if (e.target !== this.canvas) {
-            console.log('Touch not on canvas, ignoring');
-            return;
-        }
+        if (e.target !== this.canvas) return;
         
         const pointerId = e.pointerId || e.identifier || 'mouse';
         const now = Date.now();
@@ -390,7 +379,6 @@ class PopBubblesGame {
         // Cooldown to prevent ghost clicks
         if (this.pointerCooldowns.has(pointerId) && 
             now - this.pointerCooldowns.get(pointerId) < this.pointerCooldownTime) {
-            console.log('Touch cooldown active');
             return;
         }
         
@@ -400,7 +388,6 @@ class PopBubblesGame {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
-        console.log('Touch coordinates:', x, y);
         this.popBubbleAt(x, y);
     }
     
