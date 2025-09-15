@@ -33,11 +33,11 @@ class PopBubblesGame {
         this.difficultySettings = {
             easy: {
                 name: 'Easy',
-                spawnRate: 1500, // ms between spawns
+                spawnRate: 1200, // ms between spawns
                 maxBubbles: 25,
                 bubbleSizeMin: 35,
                 bubbleSizeMax: 65,
-                bubbleSpeed: 20,
+                bubbleSpeed: 35,
                 penaltyPoints: 5,
                 lifeGainStreak: 10 // Streaks needed to gain a life
             },
@@ -47,7 +47,7 @@ class PopBubblesGame {
                 maxBubbles: 35,
                 bubbleSizeMin: 25,
                 bubbleSizeMax: 50,
-                bubbleSpeed: 30,
+                bubbleSpeed: 50,
                 penaltyPoints: 10,
                 lifeGainStreak: 25
             },
