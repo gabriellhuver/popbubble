@@ -176,6 +176,24 @@ class PopBubblesGame {
         // Pointer events for bubble popping
         this.canvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
         
+        // Touch events for mobile
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Touch start detected');
+            if (e.touches.length > 0) {
+                this.handlePointerDown(e.touches[0]);
+            }
+        }, { passive: false });
+        
+        this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, { passive: false });
+        
+        // Mouse events as fallback
+        this.canvas.addEventListener('mousedown', (e) => this.handlePointerDown(e));
+        
         // Keyboard controls
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
         
@@ -299,17 +317,26 @@ class PopBubblesGame {
     }
     
     handlePointerDown(e) {
-        if (this.gameState !== 'running') return;
+        console.log('Pointer down event:', e.type, 'Game state:', this.gameState);
+        
+        if (this.gameState !== 'running') {
+            console.log('Game not running, ignoring touch');
+            return;
+        }
         
         // Check if the click is on a UI element (not on canvas)
-        if (e.target !== this.canvas) return;
+        if (e.target !== this.canvas) {
+            console.log('Touch not on canvas, ignoring');
+            return;
+        }
         
-        const pointerId = e.pointerId || 'mouse';
+        const pointerId = e.pointerId || e.identifier || 'mouse';
         const now = Date.now();
         
         // Cooldown to prevent ghost clicks
         if (this.pointerCooldowns.has(pointerId) && 
             now - this.pointerCooldowns.get(pointerId) < this.pointerCooldownTime) {
+            console.log('Touch cooldown active');
             return;
         }
         
@@ -319,6 +346,7 @@ class PopBubblesGame {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
+        console.log('Touch coordinates:', x, y);
         this.popBubbleAt(x, y);
     }
     
