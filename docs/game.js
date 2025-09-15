@@ -52,8 +52,8 @@ class PopBubblesGame {
                 name: 'Hard',
                 spawnRate: 500,
                 maxBubbles: 55,
-                bubbleSizeMin: 15,
-                bubbleSizeMax: 35,
+                bubbleSizeMin: 30,
+                bubbleSizeMax: 100,
                 bubbleSpeed: 55,
                 penaltyPoints: 20
             },
@@ -61,8 +61,8 @@ class PopBubblesGame {
                 name: 'Pro',
                 spawnRate: 200,
                 maxBubbles: 100,
-                bubbleSizeMin: 8,
-                bubbleSizeMax: 22,
+                bubbleSizeMin: 20,
+                bubbleSizeMax: 60,
                 bubbleSpeed: 90,
                 penaltyPoints: 30
             },
