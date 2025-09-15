@@ -91,7 +91,7 @@ class PopBubblesGame {
         
         // Input handling
         this.pointerCooldowns = new Map();
-        this.pointerCooldownTime = 100; // ms
+        this.pointerCooldownTime = 50; // ms - reduced for better mobile experience
         
         // Performance
         this.lastFrameTime = 0;
@@ -174,23 +174,59 @@ class PopBubblesGame {
     setupCanvas() {
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
+        
+        // Handle orientation change on mobile
+        window.addEventListener('orientationchange', () => {
+            // Small delay to ensure the viewport has updated
+            setTimeout(() => this.resizeCanvas(), 100);
+        });
+        
+        // Handle viewport changes (for mobile browsers with dynamic UI)
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => this.resizeCanvas());
+        }
     }
     
     resizeCanvas() {
-        const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = rect.width * this.dpr;
-        this.canvas.height = rect.height * this.dpr;
-        this.canvas.style.width = rect.width + 'px';
-        this.canvas.style.height = rect.height + 'px';
+        // Get the actual viewport dimensions
+        const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
         
+        // Set canvas size to full viewport
+        this.canvas.style.width = vw + 'px';
+        this.canvas.style.height = vh + 'px';
+        
+        // Set internal canvas resolution
+        this.canvas.width = vw * this.dpr;
+        this.canvas.height = vh * this.dpr;
+        
+        // Scale context for high DPI displays
         this.ctx.scale(this.dpr, this.dpr);
-        this.canvasWidth = rect.width;
-        this.canvasHeight = rect.height;
+        
+        // Store logical dimensions
+        this.canvasWidth = vw;
+        this.canvasHeight = vh;
+        
+        // Force a redraw
+        this.draw();
     }
     
     setupEventListeners() {
-        // Simple pointer events - works on both desktop and mobile
-        this.canvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+        // Use only one event type to avoid duplicates
+        if ('ontouchstart' in window) {
+            // Mobile - use only touch events
+            this.canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.handlePointerDown(e);
+            }, { passive: false });
+            
+            this.canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+        } else {
+            // Desktop - use only pointer events (works for both mouse and touch)
+            this.canvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+        }
         
         // Keyboard controls
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
@@ -333,8 +369,27 @@ class PopBubblesGame {
         this.pointerCooldowns.set(pointerId, now);
         
         const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        
+        // Get coordinates - try multiple sources
+        let x, y;
+        
+        if (e.touches && e.touches.length > 0) {
+            x = e.touches[0].clientX - rect.left;
+            y = e.touches[0].clientY - rect.top;
+        } else if (e.changedTouches && e.changedTouches.length > 0) {
+            x = e.changedTouches[0].clientX - rect.left;
+            y = e.changedTouches[0].clientY - rect.top;
+        } else if (e.clientX !== undefined) {
+            x = e.clientX - rect.left;
+            y = e.clientY - rect.top;
+        } else {
+            x = e.pageX - rect.left;
+            y = e.pageY - rect.top;
+        }
+        
+        // Scale to canvas resolution
+        x = (x / rect.width) * this.canvasWidth;
+        y = (y / rect.height) * this.canvasHeight;
         
         this.popBubbleAt(x, y);
     }
@@ -512,6 +567,7 @@ class PopBubblesGame {
         const settings = this.difficultySettings[this.difficulty];
         const radius = settings.bubbleSizeMin + Math.random() * (settings.bubbleSizeMax - settings.bubbleSizeMin);
         const x = radius + Math.random() * (this.canvasWidth - radius * 2);
+        // Spawn bubbles at the bottom of the screen (visible area)
         const y = this.canvasHeight + radius;
         
         this.bubbles.push({
@@ -528,6 +584,7 @@ class PopBubblesGame {
     updateBubbles(deltaTime) {
         for (let i = this.bubbles.length - 1; i >= 0; i--) {
             const bubble = this.bubbles[i];
+            
             
             // Update position
             bubble.x += bubble.vx * deltaTime * this.timeScale;
