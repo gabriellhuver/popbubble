@@ -146,18 +146,29 @@ class PopBubblesGame {
         }
         
         // Initialize audio on first interaction
-        document.addEventListener('pointerdown', () => {
+        const initAudio = async () => {
             if (!window.audioSystem.initialized) {
-                window.audioSystem.init();
+                await window.audioSystem.init();
+                if (window.audioSystem.isInitialized) {
+                    console.log('🎵 Audio ready!');
+                } else {
+                    console.warn('🔇 Audio failed to initialize - sounds will be disabled');
+                }
             }
-        }, { once: true });
+        };
         
-        // Also initialize on first click on canvas
-        this.canvas.addEventListener('pointerdown', () => {
-            if (!window.audioSystem.initialized) {
-                window.audioSystem.init();
-            }
-        }, { once: true });
+        // Multiple ways to initialize audio
+        document.addEventListener('pointerdown', initAudio, { once: true });
+        document.addEventListener('click', initAudio, { once: true });
+        document.addEventListener('keydown', initAudio, { once: true });
+        this.canvas.addEventListener('pointerdown', initAudio, { once: true });
+        
+        // Also try to initialize on page load (may not work in some browsers)
+        if (document.readyState === 'complete') {
+            initAudio();
+        } else {
+            window.addEventListener('load', initAudio, { once: true });
+        }
     }
     
     setupCanvas() {
@@ -718,6 +729,11 @@ class PopBubblesGame {
         this.lives--;
         this.combo = 0; // Reset combo on penalty
         this.streak = 0; // Reset streak on penalty
+        
+        // Play life lost sound
+        if (!this.isMuted) {
+            window.audioSystem.playLifeLost();
+        }
         
         if (this.lives <= 0) {
             this.gameOver();

@@ -153,6 +153,22 @@
                 </button>
             </div>
             
+            <!-- Donate section on home -->
+            <div class="home-donate-section">
+                <p class="home-donate-text">Support the developer!</p>
+                <a href="https://buy.stripe.com/4gM3cu3YA4Cg64m8u94AU00" target="_blank" class="home-donate-btn">
+                    ☕ Buy me a coffee
+                </a>
+            </div>
+            
+            <!-- GitHub section on home -->
+            <div class="home-github-section">
+                <a href="https://github.com/gabriellhuver/popbubble" target="_blank" class="home-github-btn">
+                    <span class="github-icon">🐙</span>
+                    <span class="github-text">View Source Code</span>
+                </a>
+            </div>
+            
             <!-- Custom Difficulty Settings -->
             <div id="customSettings" class="custom-settings hidden">
                 <h3>🎛️ Custom Difficulty</h3>
@@ -232,12 +248,121 @@
                     </a>
                 </div>
                 
-                <button id="playAgainBtn" class="play-again-btn">Play Again</button>
+                                <button id="playAgainBtn" class="play-again-btn">Play Again</button>
             </div>
         </div>
     </div>
     
+    <!-- Footer with version -->
+    <footer id="footer" class="version-footer">
+        <div class="version-info">
+            <span class="version-text">Version <span id="versionNumber">1.0.0</span></span>
+            <span class="build-info">Build <span id="buildNumber">1</span></span>
+        </div>
+    </footer>
+    
     <script src="audio.js"></script>
     <script src="game.js"></script>
+    
+    <!-- Version Management Script -->
+    <script>
+        // Version management system
+        class VersionManager {
+            constructor() {
+                this.versionKey = 'popbubble_version';
+                this.buildKey = 'popbubble_build';
+                this.lastUpdateKey = 'popbubble_last_update';
+                this.init();
+            }
+            
+            init() {
+                // Get current date for build number
+                const today = new Date();
+                const dateString = today.getFullYear().toString() + 
+                                 (today.getMonth() + 1).toString().padStart(2, '0') + 
+                                 today.getDate().toString().padStart(2, '0');
+                
+                // Get stored version or set initial
+                let version = localStorage.getItem(this.versionKey) || '1.0.0';
+                let build = localStorage.getItem(this.buildKey) || '1';
+                let lastUpdate = localStorage.getItem(this.lastUpdateKey) || dateString;
+                
+                // Check if it's a new day (increment build)
+                if (lastUpdate !== dateString) {
+                    build = (parseInt(build) + 1).toString();
+                    localStorage.setItem(this.buildKey, build);
+                    localStorage.setItem(this.lastUpdateKey, dateString);
+                }
+                
+                // Update display
+                document.getElementById('versionNumber').textContent = version;
+                document.getElementById('buildNumber').textContent = build;
+                
+                // Store current version
+                localStorage.setItem(this.versionKey, version);
+            }
+            
+            // Method to increment version (can be called manually)
+            incrementVersion() {
+                const currentVersion = localStorage.getItem(this.versionKey) || '1.0.0';
+                const parts = currentVersion.split('.');
+                const patch = parseInt(parts[2]) + 1;
+                const newVersion = `${parts[0]}.${parts[1]}.${patch}`;
+                
+                localStorage.setItem(this.versionKey, newVersion);
+                document.getElementById('versionNumber').textContent = newVersion;
+                
+                return newVersion;
+            }
+            
+            // Method to increment minor version
+            incrementMinor() {
+                const currentVersion = localStorage.getItem(this.versionKey) || '1.0.0';
+                const parts = currentVersion.split('.');
+                const minor = parseInt(parts[1]) + 1;
+                const newVersion = `${parts[0]}.${minor}.0`;
+                
+                localStorage.setItem(this.versionKey, newVersion);
+                document.getElementById('versionNumber').textContent = newVersion;
+                
+                return newVersion;
+            }
+            
+            // Method to increment major version
+            incrementMajor() {
+                const currentVersion = localStorage.getItem(this.versionKey) || '1.0.0';
+                const parts = currentVersion.split('.');
+                const major = parseInt(parts[0]) + 1;
+                const newVersion = `${major}.0.0`;
+                
+                localStorage.setItem(this.versionKey, newVersion);
+                document.getElementById('versionNumber').textContent = newVersion;
+                
+                return newVersion;
+            }
+        }
+        
+        // Initialize version manager
+        const versionManager = new VersionManager();
+        
+        // Make it globally available for manual updates
+        window.versionManager = versionManager;
+        
+        // Auto-increment on significant changes (detect file changes)
+        const lastFileHash = localStorage.getItem('popbubble_file_hash');
+        const currentFileHash = btoa(JSON.stringify({
+            html: document.documentElement.outerHTML.length,
+            css: document.styleSheets.length,
+            js: document.scripts.length,
+            timestamp: Date.now()
+        }));
+        
+        if (lastFileHash && lastFileHash !== currentFileHash) {
+            // File has changed, increment patch version
+            versionManager.incrementVersion();
+        }
+        
+        localStorage.setItem('popbubble_file_hash', currentFileHash);
+    </script>
 </body>
 </html>

@@ -46,7 +46,6 @@ body {
     -khtml-user-drag: none;
     -moz-user-drag: none;
     -o-user-drag: none;
-    user-drag: none;
 }
 
 /* Safari iOS specific fixes */
@@ -78,9 +77,9 @@ body {
 
 .difficulty-container {
     text-align: center;
-    max-width: 600px;
-    padding: 30px 20px;
-    max-height: 90vh;
+    max-width: 500px;
+    padding: 20px 15px;
+    max-height: 95vh;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 255, 136, 0.5) transparent;
@@ -104,31 +103,31 @@ body {
 }
 
 .difficulty-container h1 {
-    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-size: clamp(2rem, 6vw, 3rem);
     color: #fff;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
 .difficulty-container p {
-    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    font-size: clamp(1rem, 3vw, 1.2rem);
     color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 40px;
+    margin-bottom: 25px;
 }
 
 .difficulty-options {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    max-width: 500px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    max-width: 450px;
     margin: 0 auto;
 }
 
 .difficulty-btn {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
     border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 20px;
-    padding: 25px;
+    border-radius: 15px;
+    padding: 18px 15px;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     backdrop-filter: blur(15px);
@@ -136,7 +135,7 @@ body {
     color: #fff;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
 }
 
 .difficulty-btn::before {
@@ -230,6 +229,7 @@ body {
     background: linear-gradient(90deg, #333, #555);
     outline: none;
     -webkit-appearance: none;
+    appearance: none;
     cursor: pointer;
 }
 
@@ -356,15 +356,15 @@ body {
 }
 
 .difficulty-title {
-    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .difficulty-desc {
-    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    font-size: clamp(0.8rem, 2.5vw, 1rem);
     color: rgba(255, 255, 255, 0.7);
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
 #ui {
@@ -543,6 +543,7 @@ body {
     border-color: #ffd700;
     box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
 }
+
 
 
 #missFeedback {
@@ -896,6 +897,26 @@ body {
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
+    .difficulty-container {
+        max-width: 95vw;
+        padding: 15px 10px;
+    }
+    
+    .difficulty-options {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        max-width: 100%;
+    }
+    
+    .difficulty-btn {
+        padding: 15px 12px;
+    }
+    
+    .home-donate-section {
+        margin: 15px 0 10px 0;
+        padding: 12px;
+    }
+    
     #hud {
         padding: 15px;
     }
@@ -917,9 +938,167 @@ body {
     }
 }
 
+/* Small mobile screens */
+@media (max-width: 480px) {
+    .difficulty-container h1 {
+        font-size: clamp(1.8rem, 8vw, 2.5rem);
+        margin-bottom: 6px;
+    }
+    
+    .difficulty-container p {
+        font-size: clamp(0.9rem, 4vw, 1.1rem);
+        margin-bottom: 20px;
+    }
+    
+    .difficulty-btn {
+        padding: 12px 10px;
+    }
+    
+    .difficulty-title {
+        font-size: clamp(1rem, 4vw, 1.2rem);
+        margin-bottom: 4px;
+    }
+    
+    .difficulty-desc {
+        font-size: clamp(0.75rem, 3vw, 0.9rem);
+    }
+}
+
 /* High DPI displays */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
     #gameCanvas {
         image-rendering: -webkit-optimize-contrast;
     }
+}
+
+
+
+/* Home donate section */
+.home-donate-section {
+    text-align: center;
+    margin: 20px 0 15px 0;
+    padding: 15px;
+    background: linear-gradient(145deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.05));
+    border: 2px solid rgba(255, 193, 7, 0.3);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.2);
+}
+
+.home-donate-text {
+    color: #fff;
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    margin: 0 0 10px 0;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+.home-donate-btn {
+    display: inline-block;
+    background: linear-gradient(145deg, rgba(255, 193, 7, 0.8), rgba(255, 152, 0, 0.8));
+    border: 2px solid rgba(255, 193, 7, 0.9);
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 12px rgba(255, 193, 7, 0.3);
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.home-donate-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+    background: linear-gradient(145deg, rgba(255, 193, 7, 0.9), rgba(255, 152, 0, 0.9));
+}
+
+/* Home GitHub section */
+.home-github-section {
+    text-align: center;
+    margin: 15px 0 20px 0;
+    padding: 15px;
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.home-github-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.home-github-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.github-icon {
+    font-size: 1.1em;
+}
+
+.github-text {
+    font-weight: 500;
+}
+
+/* Version Footer */
+.version-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.version-footer:hover {
+    opacity: 1;
+}
+
+.version-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    font-size: clamp(0.7rem, 2vw, 0.8rem);
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+}
+
+.version-text, .build-info {
+    font-weight: 500;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+
+.version-text span, .build-info span {
+    color: #00ff88;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+/* Hide footer during game */
+#ui:not(.hidden) ~ .version-footer {
+    display: none;
 }

@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "build": 1,
+  "lastUpdate": "2024-01-01",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2024-01-01",
+      "changes": [
+        "Initial release",
+        "Added version management system",
+        "Improved UI/UX for home screen",
+        "Added responsive design for mobile devices"
+      ]
+    }
+  ],
+  "autoIncrement": {
+    "enabled": true,
+    "onFileChange": true,
+    "onNewDay": true
+  }
+}

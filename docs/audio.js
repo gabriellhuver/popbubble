@@ -22,10 +22,19 @@ class AudioSystem {
             this.masterGain.connect(this.audioContext.destination);
             this.masterGain.gain.value = 0.7; // Master volume
             
+            // Resume context if suspended (required for some browsers)
+            if (this.audioContext.state === 'suspended') {
+                await this.audioContext.resume();
+            }
+            
             this.isInitialized = true;
             this.initialized = true;
+            
+            console.log('✅ Audio system initialized successfully');
         } catch (error) {
-            console.warn('Audio initialization failed:', error);
+            console.warn('❌ Audio initialization failed:', error);
+            this.isInitialized = false;
+            this.initialized = false;
         }
     }
 
@@ -37,7 +46,7 @@ class AudioSystem {
     }
 
     async playPop(velocity = 1, pitchHint = 0.5, isPerfect = false) {
-        if (!this.isInitialized || this.isMuted) return;
+        if (!this.isInitialized || this.isMuted || !this.audioContext) return;
 
         try {
             // Resume context if suspended
@@ -128,7 +137,7 @@ class AudioSystem {
     }
 
     async playMiss() {
-        if (!this.isInitialized || this.isMuted) return;
+        if (!this.isInitialized || this.isMuted || !this.audioContext) return;
 
         try {
             if (this.audioContext.state === 'suspended') {
@@ -161,7 +170,7 @@ class AudioSystem {
     }
 
     async playSlowMo() {
-        if (!this.isInitialized || this.isMuted) return;
+        if (!this.isInitialized || this.isMuted || !this.audioContext) return;
 
         try {
             if (this.audioContext.state === 'suspended') {
@@ -200,8 +209,66 @@ class AudioSystem {
         }
     }
 
+    async playLifeLost() {
+        if (!this.isInitialized || this.isMuted || !this.audioContext) return;
+
+        try {
+            if (this.audioContext.state === 'suspended') {
+                await this.audioContext.resume();
+            }
+
+            const now = this.audioContext.currentTime;
+            const duration = 0.8;
+            
+            // Life lost sound - descending "heartbeat" effect
+            const oscillator = this.audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(200, now);
+            oscillator.frequency.exponentialRampToValueAtTime(80, now + duration);
+            
+            const gain = this.audioContext.createGain();
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.15, now + 0.05);
+            gain.gain.linearRampToValueAtTime(0.1, now + 0.3);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            // Add a second oscillator for "heartbeat" effect
+            const heartbeat = this.audioContext.createOscillator();
+            heartbeat.type = 'sine';
+            heartbeat.frequency.setValueAtTime(150, now);
+            heartbeat.frequency.exponentialRampToValueAtTime(60, now + duration);
+            
+            const heartbeatGain = this.audioContext.createGain();
+            heartbeatGain.gain.setValueAtTime(0, now);
+            heartbeatGain.gain.linearRampToValueAtTime(0.08, now + 0.1);
+            heartbeatGain.gain.linearRampToValueAtTime(0.05, now + 0.4);
+            heartbeatGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            // Add some reverb-like effect
+            const filter = this.audioContext.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800, now);
+            filter.frequency.exponentialRampToValueAtTime(200, now + duration);
+            
+            oscillator.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+            
+            heartbeat.connect(heartbeatGain);
+            heartbeatGain.connect(this.masterGain);
+            
+            oscillator.start(now);
+            heartbeat.start(now);
+            oscillator.stop(now + duration);
+            heartbeat.stop(now + duration);
+            
+        } catch (error) {
+            console.warn('Life lost sound failed:', error);
+        }
+    }
+
     async playGameOver() {
-        if (!this.isInitialized || this.isMuted) return;
+        if (!this.isInitialized || this.isMuted || !this.audioContext) return;
 
         try {
             if (this.audioContext.state === 'suspended') {
