@@ -87,7 +87,7 @@ class PopBubblesGame {
         
         // Input handling
         this.pointerCooldowns = new Map();
-        this.pointerCooldownTime = 200; // ms
+        this.pointerCooldownTime = 100; // ms
         
         // Performance
         this.lastFrameTime = 0;
@@ -132,8 +132,6 @@ class PopBubblesGame {
         this.updateUI();
         this.gameLoop();
         
-        // Safari iOS specific fixes
-        this.setupSafariFixes();
         
         // Add play again button listener after DOM is ready
         if (this.playAgainBtn) {
@@ -176,45 +174,8 @@ class PopBubblesGame {
     }
     
     setupEventListeners() {
-        // Use pointer events as primary (works on both desktop and mobile)
+        // Simple pointer events - works on both desktop and mobile
         this.canvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
-        
-        // Touch events only for Safari iOS (when pointer events don't work)
-        this.canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (e.touches && e.touches.length > 0) {
-                const touch = e.touches[0];
-                // Create a synthetic event for Safari
-                const syntheticEvent = {
-                    type: 'touchstart',
-                    clientX: touch.clientX,
-                    clientY: touch.clientY,
-                    target: this.canvas,
-                    pointerId: touch.identifier,
-                    identifier: touch.identifier
-                };
-                this.handlePointerDown(syntheticEvent);
-            }
-        }, { passive: false });
-        
-        this.canvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        }, { passive: false });
-        
-        // Additional Safari-specific events
-        this.canvas.addEventListener('gesturestart', (e) => {
-            e.preventDefault();
-        }, { passive: false });
-        
-        this.canvas.addEventListener('gesturechange', (e) => {
-            e.preventDefault();
-        }, { passive: false });
-        
-        this.canvas.addEventListener('gestureend', (e) => {
-            e.preventDefault();
-        }, { passive: false });
         
         // Keyboard controls
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
@@ -227,31 +188,6 @@ class PopBubblesGame {
         document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
     }
     
-    setupSafariFixes() {
-        // Detect Safari iOS
-        const isSafariIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent);
-        
-        if (isSafariIOS) {
-            // Force hardware acceleration
-            this.canvas.style.transform = 'translateZ(0)';
-            this.canvas.style.webkitTransform = 'translateZ(0)';
-            
-            // Prevent zoom on double tap
-            let lastTouchEnd = 0;
-            document.addEventListener('touchend', (e) => {
-                const now = (new Date()).getTime();
-                if (now - lastTouchEnd <= 300) {
-                    e.preventDefault();
-                }
-                lastTouchEnd = now;
-            }, false);
-            
-            // Additional touch event handling for Safari
-            this.canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-            }, { passive: false });
-        }
-    }
     
     setupDifficultySelection() {
         const difficultyBtns = document.querySelectorAll('.difficulty-btn');
