@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://gabriellhuver.github.io/popbubble/sitemap.xml
+
+# Game specific
+Disallow: /assets/
+Allow: /assets/icon.svg

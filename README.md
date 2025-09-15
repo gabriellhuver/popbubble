@@ -2,6 +2,13 @@
 
 A fun and addictive bubble-popping game built with vanilla HTML, CSS, and JavaScript. Perfect for quick gaming sessions and stress relief!
 
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://gabriellhuver.github.io/popbubble/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Game](https://img.shields.io/badge/Game-Arcade-blue)](https://gabriellhuver.github.io/popbubble/)
+
 ## 🎮 Game Features
 
 - **4 Difficulty Levels**: Easy, Medium, Hard, and Pro
@@ -17,6 +24,17 @@ A fun and addictive bubble-popping game built with vanilla HTML, CSS, and JavaSc
 ## 🚀 Play Now
 
 [**Play on GitHub Pages**](https://gabriellhuver.github.io/popbubble/)
+
+## 🔍 SEO Optimized
+
+This game is fully optimized for search engines with:
+- **Meta Tags**: Complete Open Graph and Twitter Card support
+- **Structured Data**: JSON-LD schema for better search visibility
+- **Sitemap**: XML sitemap for search engine crawling
+- **Robots.txt**: Proper crawling instructions
+- **Mobile-First**: Responsive design for all devices
+- **Performance**: Fast loading with vanilla JavaScript
+- **Accessibility**: Screen reader friendly and keyboard navigation
 
 ## 🎯 How to Play
 
