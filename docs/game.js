@@ -87,7 +87,7 @@ class PopBubblesGame {
         
         // Input handling
         this.pointerCooldowns = new Map();
-        this.pointerCooldownTime = 100; // ms
+        this.pointerCooldownTime = 200; // ms
         
         // Performance
         this.lastFrameTime = 0;
@@ -176,10 +176,10 @@ class PopBubblesGame {
     }
     
     setupEventListeners() {
-        // Pointer events for bubble popping
+        // Use pointer events as primary (works on both desktop and mobile)
         this.canvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
         
-        // Touch events for mobile (Safari iOS specific)
+        // Touch events only for Safari iOS (when pointer events don't work)
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -196,12 +196,12 @@ class PopBubblesGame {
                 };
                 this.handlePointerDown(syntheticEvent);
             }
-        }, { passive: false, capture: true });
+        }, { passive: false });
         
         this.canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
             e.stopPropagation();
-        }, { passive: false, capture: true });
+        }, { passive: false });
         
         // Additional Safari-specific events
         this.canvas.addEventListener('gesturestart', (e) => {
@@ -215,9 +215,6 @@ class PopBubblesGame {
         this.canvas.addEventListener('gestureend', (e) => {
             e.preventDefault();
         }, { passive: false });
-        
-        // Mouse events as fallback
-        this.canvas.addEventListener('mousedown', (e) => this.handlePointerDown(e));
         
         // Keyboard controls
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
@@ -376,7 +373,7 @@ class PopBubblesGame {
         const pointerId = e.pointerId || e.identifier || 'mouse';
         const now = Date.now();
         
-        // Cooldown to prevent ghost clicks
+        // Cooldown to prevent ghost clicks and double clicks
         if (this.pointerCooldowns.has(pointerId) && 
             now - this.pointerCooldowns.get(pointerId) < this.pointerCooldownTime) {
             return;
