@@ -17,7 +17,8 @@ class PopBubblesGame {
         this.streak = 0;
         this.maxStreak = 0;
         this.lives = 3;
-        this.maxLives = 3;
+        this.maxLives = 5;
+        this.livesGainedAtStreak = 0; // Track last streak where we gained a life
         this.highScore = parseInt(localStorage.getItem('popBubblesHighScore') || '0');
         this.lastPopTime = 0;
         this.timeScale = 1;
@@ -37,7 +38,8 @@ class PopBubblesGame {
                 bubbleSizeMin: 35,
                 bubbleSizeMax: 65,
                 bubbleSpeed: 20,
-                penaltyPoints: 5
+                penaltyPoints: 5,
+                lifeGainStreak: 10 // Streaks needed to gain a life
             },
             medium: {
                 name: 'Medium',
@@ -46,7 +48,8 @@ class PopBubblesGame {
                 bubbleSizeMin: 25,
                 bubbleSizeMax: 50,
                 bubbleSpeed: 30,
-                penaltyPoints: 10
+                penaltyPoints: 10,
+                lifeGainStreak: 25
             },
             hard: {
                 name: 'Hard',
@@ -55,7 +58,8 @@ class PopBubblesGame {
                 bubbleSizeMin: 30,
                 bubbleSizeMax: 100,
                 bubbleSpeed: 55,
-                penaltyPoints: 20
+                penaltyPoints: 20,
+                lifeGainStreak: 50
             },
             pro: {
                 name: 'Pro',
@@ -64,7 +68,8 @@ class PopBubblesGame {
                 bubbleSizeMin: 20,
                 bubbleSizeMax: 60,
                 bubbleSpeed: 90,
-                penaltyPoints: 30
+                penaltyPoints: 30,
+                lifeGainStreak: 100
             },
             custom: {
                 name: 'Custom',
@@ -73,7 +78,8 @@ class PopBubblesGame {
                 bubbleSizeMin: 25,
                 bubbleSizeMax: 50,
                 bubbleSpeed: 30,
-                penaltyPoints: 10
+                penaltyPoints: 10,
+                lifeGainStreak: 25
             }
         };
         
@@ -335,7 +341,8 @@ class PopBubblesGame {
         this.combo = 0;
         this.streak = 0;
         this.maxStreak = 0;
-        this.lives = this.maxLives;
+        this.lives = 3; // Reset to initial lives
+        this.livesGainedAtStreak = 0; // Reset life gain tracking
         this.bubbles = [];
         this.particles = [];
         this.timeScale = 1;
@@ -492,6 +499,23 @@ class PopBubblesGame {
             // Don't reset streak here - streak only resets on penalty
             this.streak++;
             this.maxStreak = Math.max(this.maxStreak, this.streak);
+        }
+        
+        // Check for life gain based on difficulty
+        const settings = this.difficultySettings[this.difficulty];
+        const lifeGainStreak = settings.lifeGainStreak;
+        
+        if (this.streak >= lifeGainStreak && this.streak % lifeGainStreak === 0 && this.streak > this.livesGainedAtStreak) {
+            if (this.lives < this.maxLives) {
+                this.lives++;
+                this.livesGainedAtStreak = this.streak;
+                this.showLifeGainedFeedback();
+                
+                // Play life gained sound
+                if (!this.isMuted) {
+                    window.audioSystem.playLifeGained();
+                }
+            }
         }
         
         this.score += baseScore;
@@ -821,6 +845,16 @@ class PopBubblesGame {
         setTimeout(() => {
             this.streakFeedback.classList.add('hidden');
         }, 1200);
+    }
+    
+    showLifeGainedFeedback() {
+        const settings = this.difficultySettings[this.difficulty];
+        const lifeGainStreak = settings.lifeGainStreak;
+        this.streakFeedback.textContent = `+1 Life! (${this.lives}/${this.maxLives}) - Next: ${lifeGainStreak * 2}`;
+        this.streakFeedback.classList.remove('hidden');
+        setTimeout(() => {
+            this.streakFeedback.classList.add('hidden');
+        }, 1500);
     }
     
     createStreakCelebration(streak) {

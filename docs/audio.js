@@ -267,6 +267,65 @@ class AudioSystem {
         }
     }
 
+    async playLifeGained() {
+        if (!this.isInitialized || this.isMuted || !this.audioContext) return;
+
+        try {
+            if (this.audioContext.state === 'suspended') {
+                await this.audioContext.resume();
+            }
+
+            const now = this.audioContext.currentTime;
+            const duration = 1.2;
+            
+            // Life gained sound - ascending "healing" effect
+            const oscillator = this.audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(300, now);
+            oscillator.frequency.exponentialRampToValueAtTime(600, now + duration * 0.7);
+            oscillator.frequency.exponentialRampToValueAtTime(800, now + duration);
+            
+            const gain = this.audioContext.createGain();
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+            gain.gain.linearRampToValueAtTime(0.15, now + 0.6);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            // Add a second oscillator for "sparkle" effect
+            const sparkle = this.audioContext.createOscillator();
+            sparkle.type = 'triangle';
+            sparkle.frequency.setValueAtTime(400, now);
+            sparkle.frequency.exponentialRampToValueAtTime(1000, now + duration);
+            
+            const sparkleGain = this.audioContext.createGain();
+            sparkleGain.gain.setValueAtTime(0, now);
+            sparkleGain.gain.linearRampToValueAtTime(0.1, now + 0.2);
+            sparkleGain.gain.linearRampToValueAtTime(0.08, now + 0.8);
+            sparkleGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            // Add some brightness filter
+            const filter = this.audioContext.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(200, now);
+            filter.frequency.exponentialRampToValueAtTime(400, now + duration);
+            
+            oscillator.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+            
+            sparkle.connect(sparkleGain);
+            sparkleGain.connect(this.masterGain);
+            
+            oscillator.start(now);
+            sparkle.start(now);
+            oscillator.stop(now + duration);
+            sparkle.stop(now + duration);
+            
+        } catch (error) {
+            console.warn('Life gained sound failed:', error);
+        }
+    }
+
     async playGameOver() {
         if (!this.isInitialized || this.isMuted || !this.audioContext) return;
 
