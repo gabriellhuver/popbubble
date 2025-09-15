@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Pop! Bolhas</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- UI Overlay -->
+    <!-- Difficulty Selection Screen -->
+    <div id="difficultyScreen">
+        <div class="difficulty-container">
+            <h1>🫧 Pop! Bubbles</h1>
+            <p>Choose your difficulty:</p>
+            <div class="difficulty-options">
+                <button class="difficulty-btn" data-difficulty="easy">
+                    <div class="difficulty-title">Easy</div>
+                    <div class="difficulty-desc">Big bubbles, slow rhythm</div>
+                </button>
+                <button class="difficulty-btn" data-difficulty="medium">
+                    <div class="difficulty-title">Medium</div>
+                    <div class="difficulty-desc">Medium size, normal rhythm</div>
+                </button>
+                <button class="difficulty-btn" data-difficulty="hard">
+                    <div class="difficulty-title">Hard</div>
+                    <div class="difficulty-desc">Small bubbles, fast rhythm</div>
+                </button>
+                <button class="difficulty-btn" data-difficulty="pro">
+                    <div class="difficulty-title">Pro</div>
+                    <div class="difficulty-desc">Maximum speed, many bubbles</div>
+                </button>
+                <button class="difficulty-btn" data-difficulty="custom">
+                    <div class="difficulty-title">Custom</div>
+                    <div class="difficulty-desc">Create your own challenge</div>
+                </button>
+            </div>
+            
+            <!-- Custom Difficulty Settings -->
+            <div id="customSettings" class="custom-settings hidden">
+                <h3>🎛️ Custom Difficulty</h3>
+                <div class="setting-group">
+                    <label for="spawnRateSlider">Spawn Rate (ms): <span id="spawnRateValue">1000</span></label>
+                    <input type="range" id="spawnRateSlider" min="100" max="2000" value="1000" step="50">
+                </div>
+                <div class="setting-group">
+                    <label for="maxBubblesSlider">Max Bubbles: <span id="maxBubblesValue">35</span></label>
+                    <input type="range" id="maxBubblesSlider" min="10" max="150" value="35" step="5">
+                </div>
+                <div class="setting-group">
+                    <label for="sizeMinSlider">Min Size (px): <span id="sizeMinValue">25</span></label>
+                    <input type="range" id="sizeMinSlider" min="5" max="50" value="25" step="1">
+                </div>
+                <div class="setting-group">
+                    <label for="sizeMaxSlider">Max Size (px): <span id="sizeMaxValue">50</span></label>
+                    <input type="range" id="sizeMaxSlider" min="10" max="80" value="50" step="1">
+                </div>
+                <div class="setting-group">
+                    <label for="speedSlider">Speed: <span id="speedValue">30</span></label>
+                    <input type="range" id="speedSlider" min="10" max="120" value="30" step="5">
+                </div>
+                <div class="setting-group">
+                    <label for="penaltySlider">Penalty Points: <span id="penaltyValue">10</span></label>
+                    <input type="range" id="penaltySlider" min="1" max="50" value="10" step="1">
+                </div>
+                <button id="startCustomGame" class="start-custom-btn">🚀 Start Custom Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ui" class="hidden">
+        <div id="hud">
+            <div class="hud-left">
+                <div id="score">0</div>
+                <div id="combo" class="hidden">x1</div>
+                <div id="streak" class="hidden">Streak: 0</div>
+            </div>
+            <div class="hud-right">
+                <div id="highScore">High Score: 0</div>
+                <div id="difficulty">Easy</div>
+                <div id="lives">❤️❤️❤️</div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <button id="muteBtn" title="Mute (M)">🔈</button>
+        </div>
+        
+        <div id="missFeedback" class="hidden">Miss!</div>
+        <div id="missClickFeedback" class="hidden">Miss!</div>
+        <div id="penaltyFeedback" class="hidden">-10</div>
+        <div id="comboFeedback" class="hidden">Combo!</div>
+        <div id="streakFeedback" class="hidden">Streak!</div>
+        
+        <div id="hints">
+            <div>Click to pop 🎧 • M to mute • P to pause • R to restart</div>
+        </div>
+        
+        <div id="pauseOverlay" class="hidden">
+            <div>Paused — P to resume</div>
+        </div>
+        
+        <div id="gameOverOverlay" class="hidden">
+            <div class="game-over-container">
+                <h2>💔 Game Over!</h2>
+                <div class="final-score">Final Score: <span id="finalScore">0</span></div>
+                <div class="high-score">High Score: <span id="finalHighScore">0</span></div>
+                <div class="max-streak">Max Streak: <span id="finalMaxStreak">0</span></div>
+                <button id="playAgainBtn" class="play-again-btn">Play Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
