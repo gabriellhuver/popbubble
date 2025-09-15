@@ -301,6 +301,9 @@ class PopBubblesGame {
     handlePointerDown(e) {
         if (this.gameState !== 'running') return;
         
+        // Check if the click is on a UI element (not on canvas)
+        if (e.target !== this.canvas) return;
+        
         const pointerId = e.pointerId || 'mouse';
         const now = Date.now();
         

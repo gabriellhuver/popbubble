@@ -31,6 +31,8 @@ body {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+    position: relative;
+    z-index: 1;
 }
 
 /* Difficulty Selection Screen */
@@ -274,6 +276,59 @@ body {
 
 .start-custom-btn:active {
     transform: translateY(-1px) scale(1.02);
+}
+
+/* Support Section Styles */
+.support-section {
+    margin: 15px 0;
+    padding: 12px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.support-text {
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+.support-btn {
+    display: inline-block !important;
+    background: linear-gradient(145deg, rgba(255, 193, 7, 0.8), rgba(255, 152, 0, 0.8)) !important;
+    border: 2px solid rgba(255, 193, 7, 0.9) !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-size: clamp(0.9rem, 2.5vw, 1rem) !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3) !important;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.5) !important;
+    cursor: pointer !important;
+    min-width: 150px !important;
+    text-align: center !important;
+    position: relative !important;
+    z-index: 50 !important;
+    pointer-events: auto !important;
+}
+
+.support-btn:hover {
+    background: linear-gradient(145deg, rgba(255, 193, 7, 1), rgba(255, 152, 0, 1)) !important;
+    border-color: rgba(255, 193, 7, 1) !important;
+    color: #fff !important;
+    transform: translateY(-2px) scale(1.05) !important;
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5) !important;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.7) !important;
+}
+
+.support-btn:active {
+    transform: translateY(-1px) scale(1.02) !important;
+    box-shadow: 0 3px 10px rgba(255, 193, 7, 0.4) !important;
 }
 
 .difficulty-title {
@@ -581,6 +636,7 @@ body {
     justify-content: center;
     backdrop-filter: blur(10px);
     z-index: 30;
+    pointer-events: auto;
 }
 
 .game-over-container {
