@@ -132,6 +132,9 @@ class PopBubblesGame {
         this.updateUI();
         this.gameLoop();
         
+        // Safari iOS specific fixes
+        this.setupSafariFixes();
+        
         // Add play again button listener after DOM is ready
         if (this.playAgainBtn) {
             // Remove any existing listeners first
@@ -176,19 +179,42 @@ class PopBubblesGame {
         // Pointer events for bubble popping
         this.canvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
         
-        // Touch events for mobile
+        // Touch events for mobile (Safari iOS specific)
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Touch start detected');
-            if (e.touches.length > 0) {
-                this.handlePointerDown(e.touches[0]);
+            console.log('Touch start detected on Safari');
+            if (e.touches && e.touches.length > 0) {
+                const touch = e.touches[0];
+                // Create a synthetic event for Safari
+                const syntheticEvent = {
+                    type: 'touchstart',
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    target: this.canvas,
+                    pointerId: touch.identifier,
+                    identifier: touch.identifier
+                };
+                this.handlePointerDown(syntheticEvent);
             }
-        }, { passive: false });
+        }, { passive: false, capture: true });
         
         this.canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
             e.stopPropagation();
+        }, { passive: false, capture: true });
+        
+        // Additional Safari-specific events
+        this.canvas.addEventListener('gesturestart', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        
+        this.canvas.addEventListener('gesturechange', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        
+        this.canvas.addEventListener('gestureend', (e) => {
+            e.preventDefault();
         }, { passive: false });
         
         // Mouse events as fallback
@@ -203,6 +229,34 @@ class PopBubblesGame {
         // Prevent context menu and scrolling
         this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
         document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+    }
+    
+    setupSafariFixes() {
+        // Detect Safari iOS
+        const isSafariIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent);
+        
+        if (isSafariIOS) {
+            console.log('Safari iOS detected, applying fixes');
+            
+            // Force hardware acceleration
+            this.canvas.style.transform = 'translateZ(0)';
+            this.canvas.style.webkitTransform = 'translateZ(0)';
+            
+            // Prevent zoom on double tap
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', (e) => {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            
+            // Additional touch event handling for Safari
+            this.canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+        }
     }
     
     setupDifficultySelection() {
