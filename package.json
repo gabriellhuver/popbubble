@@ -5,7 +5,7 @@
   "main": "docs/index.html",
   "scripts": {
     "version:patch": "node update-version.js patch",
-    "version:minor": "node update-version.js minor", 
+    "version:minor": "node update-version.js minor",
     "version:major": "node update-version.js major",
     "version:show": "node -e \"console.log(require('./version.json').version)\"",
     "build": "node update-version.js patch && echo 'Build completed'",
@@ -30,5 +30,8 @@
   "homepage": "https://gabriellhuver.github.io/popbubble/",
   "engines": {
     "node": ">=12.0.0"
+  },
+  "dependencies": {
+    "canvas": "^3.2.0"
   }
 }
